@@ -29,7 +29,8 @@ def get_text_chunks(text):
     chunks = text_splitter.split_text(text)
     return chunks
 
-
+# Add cache to avoid re-running InstructEmbeddings
+@st.cache(ttl=24*3600)
 def get_vectorstore(text_chunks):
     # embeddings = OpenAIEmbeddings()
     embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
