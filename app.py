@@ -31,15 +31,15 @@ def get_text_chunks(text):
 
 
 def get_vectorstore(text_chunks):
-    embeddings = OpenAIEmbeddings()
-    # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
+    # embeddings = OpenAIEmbeddings()
+    embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI()
-    # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
+    # llm = ChatOpenAI()
+    llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
 
     memory = ConversationBufferMemory(
         memory_key='chat_history', return_messages=True)
@@ -66,8 +66,11 @@ def handle_userinput(user_question):
 
 def main():
     load_dotenv()
-    st.set_page_config(page_title="Chat with multiple PDFs",
-                       page_icon=":books:")
+
+    # Set user interface page configuration
+    st.set_page_config(page_title="Conversing with PDFs",
+                       page_icon=":page_facing_up:")
+    
     st.write(css, unsafe_allow_html=True)
 
     if "conversation" not in st.session_state:
@@ -75,8 +78,9 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    st.header("Chat with multiple PDFs :books:")
+    st.header("Conversing with PDFs :page_facing_up:")
     user_question = st.text_input("Ask a question about your documents:")
+    
     if user_question:
         handle_userinput(user_question)
 
@@ -99,6 +103,6 @@ def main():
                 st.session_state.conversation = get_conversation_chain(
                     vectorstore)
 
-
+# Checks if app is executed directly and not imported
 if __name__ == '__main__':
     main()
